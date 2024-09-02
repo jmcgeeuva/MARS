@@ -35,7 +35,7 @@ if __name__=="__main__":
     val_data   = globals()['{}_test'.format(opt.dataset)](split = opt.split, train = 2, opt = opt)
     print("Length of validation data = ", len(val_data))
     
-    if opt.modality=='RGB': opt.input_channels = 3
+    if opt.modality=='RGB' or opt.modality=='HTSU' or opt.modality=='WTSU': opt.input_channels = 3
     elif opt.modality=='Flow': opt.input_channels = 2
 
     print("Preparing datatloaders ...")
@@ -62,6 +62,7 @@ if __name__=="__main__":
     if not os.path.exists(log_path):
         os.makedirs(log_path)
         
+    import pdb; pdb.set_trace()
     if opt.log == 1:
         if opt.pretrain_path:
             epoch_logger = Logger(os.path.join(log_path, 'PreKin_{}_{}_{}_train_batch{}_sample{}_clip{}_nest{}_damp{}_weight_decay{}_manualseed{}_model{}{}_ftbeginidx{}_varLR.log'

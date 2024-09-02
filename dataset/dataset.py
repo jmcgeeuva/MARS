@@ -27,7 +27,7 @@ def get_test_video(opt, frame_path, Total_frames):
     loop = 0
     if Total_frames < opt.sample_duration: loop = 1
     
-    if opt.modality == 'RGB': 
+    if opt.modality == 'RGB' or  opt.modality == 'HTSU' or  opt.modality == 'WTSU': 
         while len(clip) < max(opt.sample_duration, Total_frames):
             try:
                 im = Image.open(os.path.join(frame_path, '%05d.jpg'%(i+1)))
@@ -91,23 +91,27 @@ def get_train_video(opt, frame_path, Total_frames):
     loop = 0
 
     # choosing a random frame
+    # print(f'Total_frames {Total_frames}, sample_duration {opt.sample_duration}')
     if Total_frames <= opt.sample_duration: 
         loop = 1
+        print(Total_frames)
         start_frame = np.random.randint(0, Total_frames)
     else:
         start_frame = np.random.randint(0, Total_frames - opt.sample_duration)
     
-    if opt.modality == 'RGB': 
+    if opt.modality == 'RGB' or  opt.modality == 'HTSU' or  opt.modality == 'WTSU': 
         while len(clip) < opt.sample_duration:
             try:
-                im = Image.open(os.path.join(frame_path, '%05d.jpg'%(start_frame+i+1)))
+                file_name = os.path.join(frame_path, '%05d.jpg'%(start_frame+i+1))
+                im = Image.open(file_name)
                 clip.append(im.copy())
                 im.close()
             except:
                 pass
-            i += 1
             
-            if loop==1 and i == Total_frames:
+            i += 1
+            if loop==1 and start_frame+i+1 > Total_frames:
+                start_frame = 0
                 i = 0
 
     elif opt.modality == 'Flow':  
@@ -120,8 +124,8 @@ def get_train_video(opt, frame_path, Total_frames):
                 im_x.close()
                 im_y.close()
             except:
+                i += 1
                 pass
-            i += 1
             
             if loop==1 and i == Total_frames:
                 i = 0
@@ -139,8 +143,8 @@ def get_train_video(opt, frame_path, Total_frames):
                 im_x.close()
                 im_y.close()
             except:
+                i += 1
                 pass
-            i += 1
             
             if loop==1 and i == Total_frames:
                 i = 0
@@ -162,7 +166,11 @@ class HMDB51_test(Dataset):
         self.train_val_test = train
         self.opt = opt
         
-        self.lab_names = sorted(set(['_'.join(os.path.splitext(file)[0].split('_')[:-2])for file in os.listdir(opt.annotation_path)]))
+        self.lab_names = []
+        for file in os.listdir(opt.annotation_path):
+            if 'trainlist' not in file and 'classInd' not in file and 'testlist' not in file:
+                self.lab_names.append('_'.join(os.path.splitext(file)[0].split('_')[:-2]))
+        self.lab_names = sorted(set(self.lab_names))
 
         # Number of classes
         self.N = len(self.lab_names)
@@ -207,10 +215,12 @@ class HMDB51_test(Dataset):
     def __getitem__(self, idx):
         video = self.data[idx]
         label_id = self.lab_names.get(video[1])
+        # print(video[0])
         frame_path = os.path.join(self.opt.frame_dir, video[1], video[0])
 
         if self.opt.only_RGB:
-            Total_frames = len(glob.glob(glob.escape(frame_path) +  '/0*.jpg'))  
+            # print(f'Getting total frames: {frame_path}')
+            Total_frames = len(glob.glob(glob.escape(frame_path) +  '/*0*.jpg'))  
         else:
             Total_frames = len(glob.glob(glob.escape(frame_path) +  '/TVL1jpg_y_*.jpg'))
 
@@ -235,6 +245,7 @@ class UCF101_test(Dataset):
         """
         self.train_val_test = train
         self.opt = opt
+
         
         with open(os.path.join(self.opt.annotation_path, "classInd.txt")) as lab_file:
             self.lab_names = [line.strip('\n').split(' ')[1] for line in lab_file]
@@ -262,8 +273,8 @@ class UCF101_test(Dataset):
         f = open(os.path.join(self.opt.annotation_path, split_lab_filenames[0]), 'r')
         for line in f:
             class_id = self.class_idx.get(line.split('/')[0]) - 1
-            if os.path.exists(os.path.join(self.opt.frame_dir, line.strip('\n')[:-4])) == True:
-                self.data.append((os.path.join(self.opt.frame_dir, line.strip('\n')[:-4]), class_id))
+            if os.path.exists(os.path.join(self.opt.frame_dir, line.strip('\n').split(" ")[0].split('.')[0])) == True:
+                self.data.append((os.path.join(self.opt.frame_dir, line.strip('\n').split(" ")[0].split('.')[0]), class_id))
         
         f.close()
     def __len__(self):
@@ -278,7 +289,7 @@ class UCF101_test(Dataset):
         frame_path = os.path.join(self.opt.frame_dir, self.idx_class.get(label_id + 1), video[0])
 
         if self.opt.only_RGB:
-            Total_frames = len(glob.glob(glob.escape(frame_path) +  '/0*.jpg'))
+            Total_frames = len(glob.glob(glob.escape(frame_path) +  '/*0*.jpg'))
         else:
             Total_frames = len(glob.glob(glob.escape(frame_path) +  '/TVL1jpg_y_*.jpg'))
 

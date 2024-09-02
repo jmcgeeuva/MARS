@@ -18,17 +18,12 @@ import sys, os, pdb
 import numpy as np
 import subprocess
 from tqdm import tqdm
+import threading
        
-
-def extract(vid_dir, frame_dir, start, end, redo=False):
-  class_list = sorted(os.listdir(vid_dir))[start:end]
-
-  print("Classes =", class_list)
-  
-  for ic,cls in enumerate(class_list): 
+def run_extraction(ic, cls, len_class_list, redo):
     vlist = sorted(os.listdir(vid_dir + cls))
     print("")
-    print(ic+1, len(class_list), cls, len(vlist))
+    print(ic+1, len_class_list, cls, len(vlist))
     print("")
     for v in tqdm(vlist):
       outdir = os.path.join(frame_dir, cls, v[:-4])
@@ -53,6 +48,19 @@ def extract(vid_dir, frame_dir, start, end, redo=False):
       except:
         print("ERROR", cls, v)
 
+def extract(vid_dir, frame_dir, start, end, redo=False):
+  class_list = sorted(os.listdir(vid_dir))[start:end]
+
+  print("Classes =", class_list)
+  
+  threads = []
+  for ic,cls in enumerate(class_list): 
+    threads.append(threading.Thread(target=run_extraction, args=(ic, cls, len(class_list), redo,)))
+    threads[-1].start()
+
+  for thread in threads:
+    thread.join()
+  
 if __name__ == '__main__':
   vid_dir   = sys.argv[1]
   frame_dir = sys.argv[2]

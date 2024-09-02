@@ -44,6 +44,7 @@ if __name__=="__main__":
         print('loading checkpoint {}'.format(opt.resume_path1))
         checkpoint = torch.load(opt.resume_path1)
         assert opt.arch == checkpoint['arch']
+        import pdb; pdb.set_trace()
         model.load_state_dict(checkpoint['state_dict'])
     model.eval()
 
