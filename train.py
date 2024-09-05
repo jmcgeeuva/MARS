@@ -116,6 +116,7 @@ if __name__=="__main__":
 
         end_time = time.time()
         #pdb.set_trace()
+        print('start first iteration')
         for i, (inputs, targets) in enumerate(train_dataloader):
             data_time.update(time.time() - end_time)
         
