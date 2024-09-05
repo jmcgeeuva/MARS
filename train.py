@@ -51,18 +51,19 @@ if __name__=="__main__":
     criterion = nn.CrossEntropyLoss().cuda()
 
     if opt.resume_path1:
+        from models.resnext import get_fine_tuning_parameters
         print('loading checkpoint {}'.format(opt.resume_path1))
         checkpoint = torch.load(opt.resume_path1)
         
         assert opt.arch == checkpoint['arch']
         opt.begin_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
+        parameters = get_fine_tuning_parameters(model, opt.ft_begin_index)
     
     log_path = os.path.join(opt.result_path, opt.dataset)
     if not os.path.exists(log_path):
         os.makedirs(log_path)
         
-    import pdb; pdb.set_trace()
     if opt.log == 1:
         if opt.pretrain_path:
             epoch_logger = Logger(os.path.join(log_path, 'PreKin_{}_{}_{}_train_batch{}_sample{}_clip{}_nest{}_damp{}_weight_decay{}_manualseed{}_model{}{}_ftbeginidx{}_varLR.log'
@@ -92,19 +93,17 @@ if __name__=="__main__":
     print("LR patience = ", opt.lr_patience)
     
     
-    optimizer = optim.SGD(
-        parameters,
-        lr=opt.learning_rate,
-        momentum=opt.momentum,
-        dampening=dampening,
-        weight_decay=opt.weight_decay,
-        nesterov=opt.nesterov)
+    optimizer = optim.SGD( parameters, lr=opt.learning_rate, momentum=opt.momentum, dampening=dampening, weight_decay=opt.weight_decay, nesterov=opt.nesterov)
 
     if opt.resume_path1 != '':
-        optimizer.load_state_dict(torch.load(opt.resume_path1)['optimizer'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
+    
+    for param_group in  optimizer.param_groups:
+        param_group['lr'] = .1 #opt.learning_rate
+        param_group['weight_decay'] = opt.weight_decay
 
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=opt.lr_patience)
-    
+
     print('run')
     for epoch in range(opt.begin_epoch, opt.n_epochs + 1):
         

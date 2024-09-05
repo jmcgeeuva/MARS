@@ -118,10 +118,13 @@ def prune_videos(video_list, input_label_dir, pruned_label_dir, alpha):
             shutil.move(source, destination)
 
 def prune_hslices(input_directory, pruned_directory, width, height, ts, alpha=.3):
+    class_list = sorted(os.listdir(vid_dir))[start:end]
+
     os.makedirs(os.path.dirname(pruned_directory), exist_ok=True)
     label_list = [ name for name in sorted(os.listdir(input_directory)) if os.path.isdir(os.path.join(input_directory, name)) ]
     threads = dict()
-    for label in sorted(label_list):
+    for ic,label in enumerate(class_list):
+    # for label in sorted(label_list):
         # print(label)
         input_label_dir = os.path.join(input_directory, label)
         pruned_label_dir = os.path.join(pruned_directory, label)
@@ -145,11 +148,13 @@ if __name__ == '__main__':
     width = int(sys.argv[3])
     height = int(sys.argv[4])
     height_slices = bool(sys.argv[5])
+    start     = int(sys.argv[6])
+    end       = int(sys.argv[7])
 
     if height_slices:
-        prune_hslices(input_directory, pruned_directory, width, height, height_slices)
+        prune_hslices(input_directory, pruned_directory, width, height, height_slices, start, end)
     else:
-        prune_wslices(input_directory, pruned_directory, width, height, height_slices)
+        prune_wslices(input_directory, pruned_directory, width, height, height_slices, start, end)
     
     # BETA = 200
     # prune_math(input_directory, pruned_directory, BETA)

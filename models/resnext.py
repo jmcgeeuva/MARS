@@ -34,6 +34,32 @@ def downsample_basic_block(x, planes, stride):
 
     return out
 
+class Dummy(nn.Module):
+    expansion=1
+    def __init__(self, inplanes, planes, cardinality, stride=1,
+                 downsample=None):
+        super(Dummy, self).__init__()
+        mid_planes = cardinality * int(planes / 32)
+        self.conv1 = nn.Conv3d(inplanes, mid_planes, kernel_size=1, bias=False)
+        self.bn1 = nn.BatchNorm3d(mid_planes)
+        self.conv2 = nn.Conv3d(
+            mid_planes,
+            mid_planes,
+            kernel_size=3,
+            stride=stride,
+            padding=1,
+            groups=cardinality,
+            bias=False)
+        self.bn2 = nn.BatchNorm3d(mid_planes)
+        self.conv3 = nn.Conv3d(
+            mid_planes, planes * self.expansion, kernel_size=1, bias=False)
+        self.bn3 = nn.BatchNorm3d(planes * self.expansion)
+        self.relu = nn.ReLU(inplace=True)
+        self.downsample = downsample
+        self.stride = stride
+    
+    def forward(self, x):
+        return x
 
 class ResNeXtBottleneck(nn.Module):
     expansion = 2
@@ -116,6 +142,8 @@ class ResNeXt(nn.Module):
             block, 512, layers[2], shortcut_type, cardinality, stride=2)
         self.layer4 = self._make_layer(
             block, 1024, layers[3], shortcut_type, cardinality, stride=2)
+        # self.layer5= self._make_layer(
+        #     Dummy, 2048, layers[3], shortcut_type, cardinality, stride=2)
         last_duration = int(math.ceil(sample_duration / 16))
         last_size = int(math.ceil(sample_size / 32))
         self.avgpool = nn.AvgPool3d(
@@ -175,6 +203,7 @@ class ResNeXt(nn.Module):
         x2 = self.layer2(x1)
         x3 = self.layer3(x2)
         x4 = self.layer4(x3)
+        # x4a = self.layer5(x4)
 
         x5 = self.avgpool(x4)
 
@@ -189,6 +218,8 @@ class ResNeXt(nn.Module):
             for i in self.output_layers:
                 if i == 'avgpool':
                     out.append(x6)
+                if i == 'layer4a':
+                    out.append(x4a)
                 if i == 'layer4':
                     out.append(x4)
                 if i == 'layer3':

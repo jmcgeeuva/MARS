@@ -250,6 +250,23 @@ class RandomHorizontalFlip(object):
             return img.transpose(Image.FLIP_LEFT_RIGHT)
         return img
 
+
+class RandomClipFlip(object):
+    """Horizontally flip the given PIL.Image randomly with a probability of 0.5."""
+    def __init__(self, p):
+        self.p = p
+        
+    def __call__(self, clip):
+        """
+        Args:
+            img (PIL.Image): Image to be flipped.
+        Returns:
+            PIL.Image: Randomly flipped image.
+        """
+        if self.p < 0.5:
+            return list(reversed(clip))
+        return clip
+
         
 def get_mean( dataset='HMDB51'):
     #assert dataset in ['activitynet', 'kinetics']
@@ -288,7 +305,10 @@ def scale_crop(clip, train, opt):
     Return:
         Tensor(frames) of shape C x T x H x W
     """
-    if opt.modality == 'RGB' or  opt.modality == 'HTSU' or  opt.modality == 'WTSU':
+    if opt.modality == 'RGB':
+        processed_clip = torch.Tensor(3, len(clip), opt.sample_size, opt.sample_size)
+    elif opt.modality == 'HTSU' or  opt.modality == 'WTSU':
+        # print(f'DEBUG 3, {len(clip)}, {opt.sample_size}, {opt.sample_size}')
         processed_clip = torch.Tensor(3, len(clip), opt.sample_size, opt.sample_size)
     elif opt.modality == 'Flow':
         processed_clip = torch.Tensor(2, int(len(clip)/2), opt.sample_size, opt.sample_size)
@@ -302,19 +322,20 @@ def scale_crop(clip, train, opt):
     alpha = .3
     if train == 1:
         j = 0
+        if opt.modality == 'HTSU' or opt.modality == 'WTSU':
+            clip = RandomClipFlip(p = flip_prob)(clip)
+        
         for i, I in enumerate(clip):
-            width, height = I.size
-            height_lower = height*alpha
-            height_upper = height - height*alpha
-            I = I.crop((0, height_lower, width, height_upper))
-            I = MultiScaleCornerCrop(scale = scale_factor, size = opt.sample_size, crop_position = crop_position)(I)
+
             if opt.modality == 'RGB':
+                I = MultiScaleCornerCrop(scale = scale_factor, size = opt.sample_size, crop_position = crop_position)(I)
                 I = RandomHorizontalFlip(p = flip_prob)(I)
                 I = ToTensor(1)(I)
                 I = Normalize(get_mean('activitynet'), [1,1,1])(I)
                 processed_clip[:, i, :, :] = I
 
             elif opt.modality == 'Flow':
+                I = MultiScaleCornerCrop(scale = scale_factor, size = opt.sample_size, crop_position = crop_position)(I)
                 I = RandomHorizontalFlip(p = flip_prob)(I)
                 if i%2 == 0 and flip_prob<0.5:
                     I = ImageChops.invert(I)                    # Flipping x-direction
@@ -326,6 +347,7 @@ def scale_crop(clip, train, opt):
                     processed_clip[1, int((i-1)/2), :, :] = I
 
             elif opt.modality == 'RGB_Flow':
+                I = MultiScaleCornerCrop(scale = scale_factor, size = opt.sample_size, crop_position = crop_position)(I)
                 I = RandomHorizontalFlip(p = flip_prob)(I)
                 if j == 1 and flip_prob<0.5:                # Flipping x-direction
                     I = ImageChops.invert(I)
@@ -344,8 +366,13 @@ def scale_crop(clip, train, opt):
                     j = 0
             
             elif opt.modality == 'HTSU' or opt.modality == 'WTSU':
+                I = MultiScaleCornerCrop(scale = scale_factor, size = opt.sample_size, crop_position = crop_position)(I)
                 # FIXME Clipping will just play the video backwards (Need to instead flip the clip array)
                 # I = RandomHorizontalFlip(p = flip_prob)(I)
+                # width, height = I.size
+                # height_lower = height*alpha
+                # height_upper = height - height*alpha
+                # I = I.crop((0, height_lower, width, height_upper))
                 I = ToTensor(1)(I)
                 I = Normalize(get_mean('activitynet'), [1,1,1])(I)
                 processed_clip[:, i, :, :] = I
