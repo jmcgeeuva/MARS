@@ -51,14 +51,14 @@ if __name__=="__main__":
     criterion = nn.CrossEntropyLoss().cuda()
 
     if opt.resume_path1:
-        from models.resnext import get_fine_tuning_parameters
+        # from models.resnext import get_fine_tuning_parameters
         print('loading checkpoint {}'.format(opt.resume_path1))
         checkpoint = torch.load(opt.resume_path1)
         
         assert opt.arch == checkpoint['arch']
         opt.begin_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
-        parameters = get_fine_tuning_parameters(model, opt.ft_begin_index)
+        # parameters = get_fine_tuning_parameters(model, opt.ft_begin_index)
     
     log_path = os.path.join(opt.result_path, opt.dataset)
     if not os.path.exists(log_path):
@@ -98,9 +98,9 @@ if __name__=="__main__":
     if opt.resume_path1 != '':
         optimizer.load_state_dict(checkpoint['optimizer'])
     
-    for param_group in  optimizer.param_groups:
-        param_group['lr'] = .1 #opt.learning_rate
-        param_group['weight_decay'] = opt.weight_decay
+    # for param_group in  optimizer.param_groups:
+    #     param_group['lr'] = .1 #opt.learning_rate
+    #     param_group['weight_decay'] = opt.weight_decay
 
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=opt.lr_patience)
 

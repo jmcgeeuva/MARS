@@ -21,6 +21,7 @@ def get_test_video(opt, frame_path, Total_frames):
         Returns:
             list(frames) : list of all video frames
         """
+
     clip = []
     i = 0
     loop = 0
