@@ -21,24 +21,22 @@ def get_test_video(opt, frame_path, Total_frames):
         Returns:
             list(frames) : list of all video frames
         """
-
     clip = []
     i = 0
     loop = 0
     if Total_frames < opt.sample_duration: loop = 1
     
     if opt.modality == 'RGB' or opt.modality == 'HTSU' or  opt.modality == 'WTSU': 
-        while len(clip) < max(opt.sample_duration, Total_frames):
-            try:
-                im = Image.open(os.path.join(frame_path, '%05d.jpg'%(sample+1)))
+        while len(clip) < opt.sample_duration:
+            file_path = os.path.join(frame_path, '%05d.jpg'%((i%(Total_frames-1))+1))
+            if os.path.exists(file_path):
+                im = Image.open(file_path)
                 clip.append(im.copy())
                 im.close()
-            except:
-                pass
+            else:
+                print(f"DEBUG {file_path}")
+
             i += 1
-            
-            if i >= Total_frames: # loop==1 and 
-                i = 0
     # elif 
         # samples = sorted(random.sample(range(320), opt.sample_duration))
         # for sample in samples:
@@ -111,19 +109,16 @@ def get_train_video(opt, frame_path, Total_frames):
     
     if opt.modality == 'RGB' or  opt.modality == 'HTSU' or  opt.modality == 'WTSU': 
         while len(clip) < opt.sample_duration:
-            try:
-                file_name = os.path.join(frame_path, '%05d.jpg'%(start_frame+i+1))
+            file_name = os.path.join(frame_path, '%05d.jpg'%((start_frame+i)%(Total_frames-1)+1))
+            if os.path.exists(file_name):
                 im = Image.open(file_name)
                 clip.append(im.copy())
                 im.close()
-            except:
+            else:
                 print(f'DEBUG {start_frame} {i} {file_name}')
-                pass
             
             i += 1
-            if loop==1 and start_frame+i+1 > Total_frames:
-                start_frame = 0
-                i = 0
+            print(len(clip))
 
     elif opt.modality == 'Flow':  
         while len(clip) < 2*opt.sample_duration:
@@ -310,7 +305,8 @@ class UCF101_test(Dataset):
         else:
             clip = get_train_video(self.opt, frame_path, Total_frames)
                     
-        return((scale_crop(clip, self.train_val_test, self.opt), label_id))
+        result = (scale_crop(clip, self.train_val_test, self.opt), label_id)
+        return(result)
 
 class Kinetics_test(Dataset):
     def __init__(self, split, train, opt):
