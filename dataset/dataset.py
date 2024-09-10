@@ -27,18 +27,18 @@ def get_test_video(opt, frame_path, Total_frames):
     if Total_frames < opt.sample_duration: loop = 1
     
     if opt.modality == 'RGB': 
-        while len(clip) < opt.sample_duration:
-            file_path = os.path.join(frame_path, '%05d.jpg'%((i%(Total_frames-1))+1))
+        samples = sorted(random.sample(range(Total_frames), opt.sample_duration))
+        for sample in samples:
+            file_path = os.path.join(frame_path, '%05d.jpg'%(sample+1))
             if os.path.exists(file_path):
                 im = Image.open(file_path)
                 clip.append(im.copy())
                 im.close()
             else:
                 print(f"DEBUG {file_path}")
-
-            i += 1
     elif opt.modality == 'HTSU' or  opt.modality == 'WTSU':
-        samples = sorted(random.sample(range(320), opt.sample_duration))
+        length = len([x for x in os.listdir(frame_path) if x.endswith('.jpg')])
+        samples = sorted(random.sample(range(length), opt.sample_duration))
         for sample in samples:
             file_path = os.path.join(frame_path, '%05d.jpg'%(sample+1))
             if os.path.exists(file_path):
@@ -101,7 +101,6 @@ def get_train_video(opt, frame_path, Total_frames):
     # print(f'Total_frames {Total_frames}, sample_duration {opt.sample_duration}')
     if Total_frames <= opt.sample_duration: 
         loop = 1
-        print(Total_frames)
         start_frame = np.random.randint(0, Total_frames)
     else:
         start_frame = np.random.randint(0, Total_frames - opt.sample_duration)
@@ -119,7 +118,6 @@ def get_train_video(opt, frame_path, Total_frames):
                 print(f'DEBUG {start_frame} {i} {file_name}')
             
             i += 1
-            print(len(clip))
 
     elif opt.modality == 'HTSU':
         # get first slice to get the width
@@ -137,7 +135,6 @@ def get_train_video(opt, frame_path, Total_frames):
 
     elif opt.modality == 'WTSU':
         samples = sorted(random.sample(range(240), opt.sample_duration))
-        print(samples)
         for sample in samples:
             try:
                 im = Image.open(os.path.join(frame_path, '%05d.jpg'%(sample+1)))

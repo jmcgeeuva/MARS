@@ -268,7 +268,7 @@ def resnet50(**kwargs):
 def resnet101(**kwargs):
     """Constructs a ResNet-101 model.
     """
-    model = ResNeXt(ResNeXtBottleneck, [3, 4, 16, 3], **kwargs)
+    model = ResNeXt(ResNeXtBottleneck, [3, 4, 23, 3], **kwargs)
     return model
 
 
