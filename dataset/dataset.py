@@ -308,7 +308,7 @@ class UCF101_test(Dataset):
     def __getitem__(self, idx):
         video = self.data[idx]
         label_id = video[1]
-        frame_path = os.path.join(self.opt.frame_dir, self.idx_class.get(label_id + 1), video[0])
+        frame_path = video[0]
 
         if self.opt.only_RGB:
             Total_frames = len(glob.glob(glob.escape(frame_path) +  '/*0*.jpg'))
