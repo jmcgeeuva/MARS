@@ -28,15 +28,16 @@ def get_test_video(opt, frame_path, Total_frames):
     if Total_frames < opt.sample_duration: loop = 1
     
     if opt.modality == 'RGB': 
-        samples = sorted(random.sample(range(Total_frames), opt.sample_duration))
-        for sample in samples:
-            file_path = os.path.join(frame_path, '%05d.jpg'%(sample+1))
+        while len(clip) < opt.sample_duration:
+            file_path = os.path.join(frame_path, '%05d.jpg'%((i%(Total_frames-1))+1))
             if os.path.exists(file_path):
                 im = Image.open(file_path)
                 clip.append(im.copy())
                 im.close()
             else:
                 print(f"DEBUG {file_path}")
+
+            i += 1
     elif opt.modality == 'HTSU' or  opt.modality == 'WTSU':
         length = len([x for x in os.listdir(frame_path) if x.endswith('.jpg')])
         samples = sorted(random.sample(range(length), opt.sample_duration))
