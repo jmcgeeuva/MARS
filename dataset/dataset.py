@@ -308,7 +308,6 @@ class UCF101_test(Dataset):
     def __getitem__(self, idx):
         video = self.data[idx]
         label_id = video[1]
-        # frame_path = os.path.join(self.opt.frame_dir, video[1], video[0])
         frame_path = video[0]
 
         if self.opt.only_RGB:

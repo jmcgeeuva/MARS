@@ -32,7 +32,7 @@ def generate_model( opt):
         model.module.fc = nn.Linear(model.module.fc.in_features, opt.n_finetune_classes)
         model.module.fc = model.module.fc.cuda()
 
-        parameters = get_fine_tuning_parameters(model, opt.ft_begin_index, opt.learning_rate)
+        parameters = get_fine_tuning_parameters(model, opt.ft_begin_index)
         return model, parameters
 
     return model, model.parameters()
