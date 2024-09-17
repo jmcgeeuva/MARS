@@ -66,6 +66,8 @@ if __name__=="__main__":
             clip = torch.squeeze(clip)
             if opt.modality == 'RGB':
                 inputs = torch.Tensor(int(clip.shape[1]/opt.sample_duration), 3, opt.sample_duration, opt.sample_size, opt.sample_size)
+            if opt.modality == 'HTSU' or opt.modality == 'WTSU':
+                inputs = torch.Tensor(int(clip.shape[1]/opt.sample_duration), 3, opt.sample_duration, opt.sample_size, opt.sample_size)
             elif opt.modality == 'Flow':
                 inputs = torch.Tensor(int(clip.shape[1]/opt.sample_duration), 2, opt.sample_duration, opt.sample_size, opt.sample_size)
                     

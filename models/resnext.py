@@ -178,6 +178,7 @@ class ResNeXt(nn.Module):
 
         x5 = self.avgpool(x4)
 
+        # print(f'Size {x5.shape}')
         x6 = x5.view(x5.size(0), -1)
         x7 = self.fc(x6)
         
@@ -204,7 +205,7 @@ class ResNeXt(nn.Module):
                 m.bias.requires_grad = False
 
 
-def get_fine_tuning_parameters(model, ft_begin_index):
+def get_fine_tuning_parameters(model, ft_begin_index, learning_rate):
     if ft_begin_index == 0:
         return model.parameters()
 
@@ -216,12 +217,22 @@ def get_fine_tuning_parameters(model, ft_begin_index):
     print("Layers to finetune : ", ft_module_names)
 
     parameters = []
+    # ft_module_lr = {}
     for k, v in model.named_parameters():
         for ft_module in ft_module_names:
             if ft_module in k:
+                # if ft_module not in ft_module_lr.keys():
+                #     ft_module_lr[ft_module] = learning_rate
+                # Set the lr to the opt learning_rate specified (by leaving this blank)
                 parameters.append({'params': v})
                 break
         else:
+            # Split k to find the layer and lr
+            # import pdb; pdb.set_trace()
+            # key = k.split('.')[1]
+            # if key not in ft_module_lr.keys():
+            #     ft_module_lr[key] = 0.0
+            # Set the lr to 0 if it is not a fine tune layer
             parameters.append({'params': v, 'lr': 0.0})
 
     return parameters

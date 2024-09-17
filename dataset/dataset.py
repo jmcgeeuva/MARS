@@ -40,7 +40,7 @@ def get_test_video(opt, frame_path, Total_frames):
         length = len([x for x in os.listdir(frame_path) if x.endswith('.jpg')])
         samples = sorted(random.sample(range(length), opt.sample_duration))
         for sample in samples:
-            file_path = os.path.join(frame_path, '%05d.jpg'%(sample+1))
+            file_path = os.path.join(frame_path, '%05d.jpg'%(sample))
             if os.path.exists(file_path):
                 im = Image.open(file_path)
                 clip.append(im.copy())
@@ -316,7 +316,8 @@ class UCF101_test(Dataset):
     def __getitem__(self, idx):
         video = self.data[idx]
         label_id = video[1]
-        frame_path = os.path.join(self.opt.frame_dir, self.idx_class.get(label_id + 1), video[0])
+        # frame_path = os.path.join(self.opt.frame_dir, video[1], video[0])
+        frame_path = video[0]
 
         if self.opt.only_RGB:
             Total_frames = len(glob.glob(glob.escape(frame_path) +  '/*0*.jpg'))
