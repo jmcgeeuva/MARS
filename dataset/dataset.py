@@ -39,16 +39,30 @@ def get_test_video(opt, frame_path, Total_frames):
 
             i += 1
     elif opt.modality == 'HTSU' or  opt.modality == 'WTSU':
-        length = len([x for x in os.listdir(frame_path) if x.endswith('.jpg')])
-        samples = sorted(random.sample(range(length), opt.sample_duration))
-        for sample in samples:
-            file_path = os.path.join(frame_path, '%05d.jpg'%(sample))
-            if os.path.exists(file_path):
-                im = Image.open(file_path)
-                clip.append(im.copy())
-                im.close()
-            else:
-                print(f"DEBUG {file_path}")
+        if opt.random_sample:
+            file_list = [os.path.join(frame_path, name) for name in os.listdir(frame_path) if os.path.isfile(os.path.join(frame_path, name)) and name.endswith('.jpg')]
+            length = len(file_list)
+            samples = sorted(random.sample(range(length), opt.sample_duration))
+            for sample in samples:
+                file_path = file_list[sample]
+                if os.path.exists(file_path):
+                    im = Image.open(file_path)
+                    clip.append(im.copy())
+                    im.close()
+                else:
+                    print(f"DEBUG {file_path}")
+        else:
+            file_list = [os.path.join(frame_path, name) for name in os.listdir(frame_path) if os.path.isfile(os.path.join(frame_path, name)) and name.endswith('.jpg')]
+            while len(clip) < opt.sample_duration:
+                file_path = file_list[i%(Total_frames-1)]
+                if os.path.exists(file_path):
+                    im = Image.open(file_path)
+                    clip.append(im.copy())
+                    im.close()
+                else:
+                    print(f"DEBUG {file_path}")
+
+                i += 1
     elif opt.modality == 'Flow':  
         while len(clip) < 2*max(opt.sample_duration, Total_frames):
             try:
@@ -123,17 +137,31 @@ def get_train_video(opt, frame_path, Total_frames):
 
     elif opt.modality == 'HTSU' or opt.modality == 'WTSU':
         # get first slice to get the width
-        length =  len([name for name in os.listdir(frame_path) if os.path.isfile(os.path.join(frame_path, name)) and name.endswith('.jpg')])
-        samples = sorted(random.sample(range(num_files), opt.sample_duration))
-        for sample in samples:
-            try:
-                file_name = os.path.join(frame_path, '%05d.jpg'%(sample))
-                im = Image.open(file_name)
-                clip.append(im.copy())
-                im.close()
-            except:
-                print(f'DEBUG {sample} {file_name} not found!')
-                pass
+        if opt.random_sample:
+            file_list = [os.path.join(frame_path, name) for name in os.listdir(frame_path) if os.path.isfile(os.path.join(frame_path, name)) and name.endswith('.jpg')]
+            num_files =  len(file_list)
+            samples = sorted(random.sample(range(num_files), opt.sample_duration))
+            for sample in samples:
+                try:
+                    im = Image.open(file_list[sample])
+                    clip.append(im.copy())
+                    im.close()
+                except:
+                    print(f'DEBUG {sample} {file_name} not found!')
+                    pass
+        else:
+            # grab random start slice and then get the next 16 consecutive frames (same as RGB)
+            while len(clip) < opt.sample_duration:
+                file_name = os.path.join(frame_path, '%05d.jpg'%((start_frame+i)%(Total_frames-1)+1))
+                if os.path.exists(file_name):
+                    im = Image.open(file_name)
+                    clip.append(im.copy())
+                    im.close()
+                else:
+                    print(f'DEBUG {start_frame} {i} {file_name}')
+                
+                i += 1
+
 
     elif opt.modality == 'Flow':  
         while len(clip) < 2*opt.sample_duration:

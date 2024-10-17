@@ -19,11 +19,23 @@ import numpy as np
 import subprocess
 from tqdm import tqdm
 import threading
+from ffmpeg import FFmpeg
 
 def ffmpeg(iteration, input_file, num_frames, resize_str,outdir):
   output_pattern = os.path.join(outdir, f'{iteration:05}.jpg')
   # Set up FFmpeg command using ffmpy
-  os.system(f'ffmpeg -i "{input_file}" -vf "crop=2:ih:{iteration}:0, select=not(mod(n\\,1)), tile={num_frames}x1, scale={resize_str}" "{output_pattern}" -y > /dev/null 2>&1')
+  ffmpeg = (
+    FFmpeg()
+    .option("y")
+    .input(input_file)
+    .output(
+      output_pattern,
+      vf=f"crop=2:ih:{iteration}:0, select=not(mod(n\\,1)), tile={num_frames}x1, scale={resize_str}"
+    )
+  )
+
+  ffmpeg.execute()
+  # os.system(f'ffmpeg -i "{input_file}" -vf "crop=2:ih:{iteration}:0, select=not(mod(n\\,1)), tile={num_frames}x1, scale={resize_str}" "{output_pattern}" -y > /dev/null 2>&1')
 
 def extract(vid_dir, frame_dir, start, end, redo=False):
   class_list = sorted(os.listdir(vid_dir))[start:end]
@@ -32,6 +44,7 @@ def extract(vid_dir, frame_dir, start, end, redo=False):
   
   for ic,cls in enumerate(class_list): 
     vlist = sorted(os.listdir(vid_dir + cls))
+    print(f'Processing {len(vlist)} videos')
     # print("")
     # print(ic+1, len(class_list), cls, len(vlist))
     # print("")

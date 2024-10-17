@@ -222,7 +222,13 @@ def parse_opts():
         '--manual_seed', default=1, type=int, help='Manually set random seed')
     parser.add_argument(
         '--random_seed', default=1, type=bool, help='Manually set random seed of sampling validation clip')
+    parser.add_argument(
+        '--random_sample', default=1, type=bool, help='Choosing if the clip should be randomly sampled or a start clip should be randomly chosen and the next consecutive frames pulled')
     
+    parser.add_argument('--random-sample', action='store_true')
+    parser.add_argument('--no-random-sample', dest='random_sample', action='store_false')
+    parser.set_defaults(feature=True)
+
     args = parser.parse_args()
 
     return args

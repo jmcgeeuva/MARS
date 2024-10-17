@@ -1,34 +1,131 @@
-Testing
+# Two Stream
 
-python test_two_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB  --resume_path1 "/scratch/tkg5kq/MARS/pretrained/MARS_orig/HDMB/RGB_HMDB51_16f.pth" --resume_path2 "/scratch/tkg5kq/MARS/pretrained/MARS_orig/HDMB/MARS_HMDB51_16f.pth" --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" --result_path "results/mars_rgb_hdmb_pretrained_test"
+DATASET=$HMDB
+python test_two_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB \
+                          --resume_path1 "/scratch/tkg5kq/MARS/pretrained/MARS_orig/HDMB/RGB_HMDB51_16f.pth" \
+                          --resume_path2 "/scratch/tkg5kq/MARS/pretrained/MARS_orig/HDMB/MARS_HMDB51_16f.pth" \
+                          --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" \
+                          --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                          --result_path "results/mars_rgb_hdmb_pretrained_test"
 
-python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB  --resume_path1 "/scratch/tkg5kq/MARS/pretrained/st_models/HDMB/PreKin_HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" --result_path "results/st_rgb_trained_test"
+# Single Stream
 
-python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB  --resume_path1 "/scratch/tkg5kq/MARS/pretrained/ts_models/HDMB/PreKin_HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" --result_path "results/ts_rgb_trained_test"
+## HMDB51
 
-Training
+python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB  \
+                             --resume_path1 "./pretrained/st_models/HDMB/PreKin_HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" \
+                             --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" \
+                             --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                             --result_path "results/st_rgb_trained_test"
 
-python train.py --dataset HMDB51 --modality RGB  --split 1 --only_RGB --n_classes 400 --n_finetune_classes 51  --batch_size 32 --log 1 --sample_duration 16 --model resnext --model_depth 101 --ft_begin_index 4 --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/"   --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/"                                       --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" --result_path "results/ts_rgb_training_trimmed"
+python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB  \
+                             --resume_path1 "/scratch/tkg5kq/MARS/pretrained/ts_models/HDMB/PreKin_HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" \
+                             --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/" \
+                             --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                             --result_path "results/ts_rgb_trained_test"
 
-python train.py --dataset UCF101 --modality HTSU --split 1 --only_RGB --n_classes 400 --n_finetune_classes 101 --batch_size 32 --log 1 --sample_duration 16 --model resnext --model_depth 101 --ft_begin_index 4 --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/wslices/" --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" --result_path "results/"
+python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB \
+                             --resume_path1 "/scratch/tkg5kq/MARS/results/ts_htsu_training_trimmed/HMDB51/PreKin_HMDB51_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" \
+                             --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                             --result_path "results/ts_htsu_testing_trimmed"
 
-python train.py --dataset HMDB51 --modality RGB --split 1 --only_RGB --n_classes 400 --n_finetune_classes 51 --batch_size 32 --log 1 --sample_duration 16 --model resnext --model_depth 152 --ft_begin_index 4 --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" --result_path "results/ts_rgb_training_trimmed"
+python test_single_stream.py --batch_size 1 --n_classes 101 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB \
+                             --resume_path1 "/scratch/tkg5kq/MARS/results/ts_htsu_ucf101_training_trimmed2/UCF101/PreKin_UCF101_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" \
+                             --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/frames/" \
+                             --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" \
+                             --result_path "/scratch/tkg5kq/MARS/results/ts_htsu_ucf101_testing_trimmed2"
 
-python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB --resume_path1 "/scratch/tkg5kq/MARS/results/ts_htsu_training_trimmed/HMDB51/PreKin_HMDB51_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" --result_path "results/ts_htsu_testing_trimmed"
+python test_single_stream.py --batch_size 1 --n_classes 101 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB \
+                             --resume_path1 "/scratch/tkg5kq/MARS/results/training/TS/HMDB/ts_rgb_trimmed2/HMDB51/HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay0.001_manualseed1_modelresnext50_ftbeginidx4_varLR400.pth" \
+                             --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/frames/" \
+                             --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" \
+                             --result_path "/scratch/tkg5kq/MARS/results/testing/TS/HMDB/ts_rgb_trimmed2"
+
+python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 50 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB \
+                             --resume_path1 "/scratch/tkg5kq/MARS/results/training/TS/HMDB/ts_rgb_trimmed2/HMDB51/HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay0.001_manualseed1_modelresnext50_ftbeginidx4_varLR400.pth" \
+                             --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" \
+                             --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                             --result_path "/scratch/tkg5kq/MARS/results/testing/TS/HMDB/ts_rgb_trimmed2"
+
+python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB \
+                             --resume_path1 "/scratch/tkg5kq/MARS/results/ts_htsu_training_trimmed/HMDB51/PreKin_HMDB51_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" \
+                             --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/" \
+                             --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                             --result_path "results/testing/TS/ts_htsu_trimmed"
+
+## UCF101
+
+python test_single_stream.py --batch_size 1 --n_classes 101 --model resnext --model_depth 101 --log 0 --dataset UCF101 --modality HTSU --sample_duration 16 --split 1 --only_RGB \
+                             --resume_path1 /scratch/tkg5kq/MARS/results/TS/wslices_400_epochs2/UCF101/PreKin_UCF101_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR70.pth \
+                             --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/wslices_pruned/" \
+                             --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" \
+                             --result_path "results/TS/pruned/pruned_training_dur16_finetune3/testing/"
+
+# Training
+
+## HMDB51
+
+### RGB
+
+python train.py --dataset HMDB51 --modality RGB  --split 1 --only_RGB --n_classes 400 --n_finetune_classes 51  --batch_size 32 --log 1 --sample_duration 16 --model resnext \
+                --model_depth 101 \
+                --ft_begin_index 4 \
+                --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" \
+                --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" \
+                --result_path "results/ts_rgb_training_trimmed"
+
+python train.py --dataset HMDB51 --modality RGB --split 1 --only_RGB --n_classes 400 --n_finetune_classes 51 --batch_size 32 --log 1 --sample_duration 16 --model resnext \
+                --model_depth 152 \
+                --ft_begin_index 4 \
+                --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" \
+                --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" \
+                --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" \
+                --result_path "results/ts_rgb_training_trimmed"
+
+#ts_htsu_training_trimmed
+
+### HTSU
+
+python train.py --dataset HMDB51 --modality HTSU --split 1 --only_RGB --n_classes 400 --n_finetune_classes 51 --batch_size 32 --log 1 --sample_duration 16 --model resnext \
+                --model_depth 101 \
+                --frame_dir ../mmaction2/data/hmdb51/wslices_res/ \
+                --annotation_path ../mmaction2/data/hmdb51/annotations/ \
+                --pretrain_path ./pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth \
+                --result_path results/st/st_test \
+                --ft_begin_index 3 \
+                --resume_path1 /scratch/tkg5kq/MARS/results/ts/ts_test/HMDB51/PreKin_HMDB51_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx3_varLR42.pth
+
+## UCF101
+
+### HTSU
+
+python train.py --dataset UCF101 --modality HTSU --split 1 --only_RGB --n_classes 400 --n_finetune_classes 101 --batch_size 32 --log 1 --sample_duration 16 --model resnext \
+                --model_depth 101 \
+                --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/wslices/" \
+                --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" \
+                --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" \
+                --result_path "results/" \
+                --random-sample \
+                --ft_begin_index 4
+
+python train.py --dataset UCF101 --modality HTSU --split 1 --only_RGB --n_classes 400 --n_finetune_classes 101 --batch_size 32 --log 1 \
+                --sample_duration 32 \
+                --model resnext \
+                --model_depth 101 \
+                --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/wslices_pruned/" \
+                --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" \
+                --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" \
+                --result_path "results/TS/pruned_training_dur32"\
+                --random-sample \
+                --ft_begin_index 4
 
 
-python test_single_stream.py --batch_size 1 --n_classes 101 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB --resume_path1 "/scratch/tkg5kq/MARS/results/ts_htsu_ucf101_training_trimmed2/UCF101/PreKin_UCF101_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/frames/" --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" --result_path "/scratch/tkg5kq/MARS/results/ts_htsu_ucf101_testing_trimmed2"
-
-
-python test_single_stream.py --batch_size 1 --n_classes 101 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB --resume_path1 "/scratch/tkg5kq/MARS/results/training/TS/HMDB/ts_rgb_trimmed2/HMDB51/HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay0.001_manualseed1_modelresnext50_ftbeginidx4_varLR400.pth" --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/frames/" --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" --result_path "/scratch/tkg5kq/MARS/results/testing/TS/HMDB/ts_rgb_trimmed2"
-
-python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 50 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB --resume_path1 "/scratch/tkg5kq/MARS/results/training/TS/HMDB/ts_rgb_trimmed2/HMDB51/HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay0.001_manualseed1_modelresnext50_ftbeginidx4_varLR400.pth" --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/frames/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" --result_path "/scratch/tkg5kq/MARS/results/testing/TS/HMDB/ts_rgb_trimmed2"
-
-python test_single_stream.py --batch_size 1 --n_classes 51 --model resnext --model_depth 101 --log 0 --dataset HMDB51 --modality RGB --sample_duration 16 --split 1 --only_RGB --resume_path1 "/scratch/tkg5kq/MARS/results/ts_htsu_training_trimmed/HMDB51/PreKin_HMDB51_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR400.pth" --frame_dir "/scratch/tkg5kq/mmaction2/data/hmdb51/slices/" --annotation_path "/scratch/tkg5kq/mmaction2/data/hmdb51/annotations/" --result_path "results/testing/TS/ts_htsu_trimmed"
-
-
-python train.py --dataset HMDB51 --modality RGB --split 1 --only_RGB --n_classes 400 --n_finetune_classes 51 --batch_size 32 --log 1 --sample_duration 16 --model resnext --model_depth 101 --ft_begin_index 4 --frame_dir "dataset/HMDB51" --annotation_path "dataset/HMDB51_labels" --pretrain_path "trained_models/Kinetics/RGB_Kinetics_16f.pth" --resume_path1 "results/HMDB51/PreKin_HMDB51_1_RGB_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx4_varLR2.pth" --result_path "results/TS/ts_htsu_training_trimmed"
-
-python train.py --dataset HMDB51 --modality HTSU --split 1 --only_RGB --n_classes 400 --n_finetune_classes 51 --batch_size 32 --log 1 --sample_duration 16 --model resnext --model_depth 101 --ft_begin_index 4 --frame_dir ../mmaction2/data/hmdb51/frames/ --annotation_path ../mmaction2/data/hmdb51/annotations/ --pretrain_path ./pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth --result_path results/st/st_test --ft_begin_index 3 --resume_path1 /scratch/tkg5kq/MARS/results/ts/ts_test/HMDB51/PreKin_HMDB51_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx3_varLR42.pth
-
-python test_single_stream.py --batch_size 1 --n_classes 101 --model resnext --model_depth 101 --log 0 --dataset UCF101 --modality HTSU --sample_duration 16 --split 1 --only_RGB --resume_path1 /scratch/tkg5kq/MARS/results/ts/ts_test2/UCF101/PreKin_UCF101_1_HTSU_train_batch32_sample112_clip16_nestFalse_damp0.9_weight_decay1e-05_manualseed1_modelresnext101_ftbeginidx2_varLR206.pth --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/frames/" --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" --result_path "/scratch/tkg5kq/MARS/results/ts/ts_test2/UCF101/testing/"
+python train.py --dataset UCF101 --modality HTSU --split 1 --only_RGB --n_classes 400 --n_finetune_classes 101 --batch_size 32 --log 1 --sample_duration 16 --model resnext \
+                --model_depth 101 \
+                --frame_dir "/scratch/tkg5kq/datasets/ucf-101/ucf101/wslices/" \
+                --annotation_path "/scratch/tkg5kq/datasets/ucf-101/UCF101TrainTestSplits-RecognitionTask/ucfTrainTestlist/" \
+                --pretrain_path "/scratch/tkg5kq/MARS/pretrained/MARS_orig/Kinetics/RGB_Kinetics_16f.pth" \
+                --result_path "results/" \
+                --random-sample \
+                --ft_begin_index 4
